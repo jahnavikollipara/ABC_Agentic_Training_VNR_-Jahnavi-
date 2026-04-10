@@ -86,7 +86,7 @@ Gmail (Send Notification)
    Import JSON workflow file
    Activate workflow
    
-7.References & Resources
+5.References & Resources
 https://n8n.io/docs
 https://ollama.ai
 https://js.langchain.com/docs
@@ -94,7 +94,7 @@ https://developers.google.com/drive
 https://developers.google.com/sheets/api
 https://developers.google.com/gmail/api
 
-8. Problems Faced & Solutions
+6. Problems Faced & Solutions
 Problem 1: Google API Authentication Issues
 Solution: Properly configured OAuth credentials and permissions
 
@@ -107,16 +107,16 @@ Solution: Installed and configured TinyLlama locally
 Problem 4: Workflow Debugging
 Solution: Used n8n execution logs to trace error
 
-9. Key Features
+7. Key Features
     Fully automated workflow
     AI-powered summarization
     Real-time processing
     Instant notifications
-10.Future Enhancements
+8.Future Enhancements
    Add UI dashboard
    Support more file formats (PDF, DOCX)
    Use advanced AI models (GPT)
    Add tagging & search
    
-11.Conclusion
+9.Conclusion
 This project demonstrates how AI and automation can simplify document processing. It reduces manual effort, improves efficiency, and enables scalable real-time document analysis.
