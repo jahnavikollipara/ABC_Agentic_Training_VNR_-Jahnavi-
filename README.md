@@ -13,6 +13,8 @@ Users often need to extract information from documents and ask questions related
 
 A system that can accept user queries, understand conversation history, detect uploaded documents, extract and process document content, and intelligently route queries based on context. Such a system should generate accurate AI responses while supporting both general queries and document-based questions.
 
+Link_Record:https://drive.google.com/file/d/1nD8mykTrC1lsmOvNHdWFios4XZPC9apd/view?usp=sharing
+
 ## 3. Implemented Solution
 
 We built an Agentic AI Assistant using n8n that receives user queries through a webhook (UI or Postman), processes the input, and identifies whether a document is uploaded. The workflow uses a Switch node to route the request into three modes: General Chat, Document Mode (RAG), and Search Mode. If a PDF is uploaded, the system extracts text from the document and uses the TinyLlama model via Ollama to generate answers strictly based on the document. For general queries, it responds using chat history to maintain context. The system finally returns a structured response back to the user.
