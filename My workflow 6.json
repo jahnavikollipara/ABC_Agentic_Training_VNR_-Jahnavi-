@@ -1,0 +1,463 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5957b58c-e320-4ae7-928f-cfd43690c63d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e6e11e8c-7db4-492e-9969-27c0d03b5553",
+      "name": "Webhook",
+      "webhookId": "5957b58c-e320-4ae7-928f-cfd43690c63d"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"answer\": {{$json.answer.toJsonString()}},\n  \"route\": \"{{$json.route}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2128,
+        -256
+      ],
+      "id": "4a06b142-031d-48fd-89d6-6dadf2dc5c34",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const question = $json.body?.message || \"\";\n\nlet historyRaw = $json.body?.history;\nlet historyArray = [];\n\ntry {\n  historyArray = typeof historyRaw === \"string\"\n    ? JSON.parse(historyRaw)\n    : historyRaw || [];\n} catch (e) {\n  historyArray = [];\n}\n\nconst history = historyArray\n  .map(h => `${h.role}: ${h.content}`)\n  .join('\\n');\n\nreturn [{\n  json: {\n    question,\n    original: question,\n    mode: $json.body?.mode || \"auto\",\n    history: history,\n    hasFiles: Object.keys($binary || {}).length > 0,\n    fileNames: Object.keys($binary || {}),\n    timestamp: new Date().toISOString()\n  },\n  binary: $binary\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "724ad6f0-804c-4459-961a-2376d988d5a8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 3,
+        "output": "={{ $json.hasFiles ? 1 : ($json.question && $json.question.toLowerCase().includes(\"pdf\") ? 1 : 0) }}"
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        -16
+      ],
+      "id": "81f6d92c-e064-4cfd-9e40-7bbbe7a55bc9",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"answer\": \"={{($json.content || '').trim()}}\",\n  \"route\": \"document\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2608,
+        0
+      ],
+      "id": "2832bc44-9a3b-4319-9b18-5ee82dcfa5b3",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"answer\": {{ JSON.stringify($json.answer || \"\") }},\n  \"route\": \"search\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2208,
+        192
+      ],
+      "id": "e16e666c-7f8d-4eab-bfe2-b33645f2d498",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "tinyllama:latest",
+          "mode": "list",
+          "cachedResultName": "tinyllama:latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=The user is asking a follow-up question.\n\nUse the previous conversation to understand the topic.\n\nIf the topic is a programming language, give correct syntax of that language.\n\nDo NOT invent anything.\nDo NOT generate fake examples.\n\nConversation:\n{{ $json.history }}\n\nQuestion:\n{{ $json.question }}\n\nAnswer:"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        -256
+      ],
+      "id": "1afc83ad-169e-4039-a84d-3d61f90fd2e4",
+      "name": "Message a model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "vyg5l4JLFOc8Xo1O",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "tinyllama:latest",
+          "mode": "list",
+          "cachedResultName": "tinyllama:latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a helpful assistant.\n\nAnswer ONLY using the document below.\n\nDOCUMENT:\n{{ $json.document }}\n\nQUESTION:\n{{ $json.question }}\n\nIf answer is not in document, say \"Not found in document\"."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        0
+      ],
+      "id": "1210d668-173f-432c-ab10-90a34aa95c1f",
+      "name": "Message a model2",
+      "credentials": {
+        "ollamaApi": {
+          "id": "vyg5l4JLFOc8Xo1O",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "tinyllama:latest",
+          "mode": "list",
+          "cachedResultName": "tinyllama:latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Give ONLY the answer to the question.\n\nDo not introduce yourself.\nDo not say \"I can help\".\nDo not give extra sentences.\n\nAnswer in 2 lines.\n\nQuestion:\n{{ $json.question }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        192
+      ],
+      "id": "becba892-2626-4f57-9c3c-3bf3aa538d3f",
+      "name": "Message a model3",
+      "credentials": {
+        "ollamaApi": {
+          "id": "vyg5l4JLFOc8Xo1O",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"answer\": {{$json.content.toJsonString()}},\n  \"route\": \"general\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1824,
+        -256
+      ],
+      "id": "ab02aa2b-d701-434f-9e35-6a495826691a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        0
+      ],
+      "id": "a17fefd5-784f-415b-bd81-f29a034e86cb",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    document: $json.text,\n    question: $node[\"Code in JavaScript\"].json.question\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        0
+      ],
+      "id": "44c95150-c407-4c41-b3ba-03769f400619",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"answer\": {{ JSON.stringify($json.content) }},\n  \"route\": \"document\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2400,
+        0
+      ],
+      "id": "1be2baf1-a409-41c7-8542-928dcccbbd29",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"answer\": {{ JSON.stringify($json.content || \"\") }},\n  \"route\": \"search\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        192
+      ],
+      "id": "30b15d0e-ff0c-4dc3-b3c3-4365106d610e",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const q = ($json.question || \"\")\n  .replace(/SEARCH/gi, \"\")\n  .trim();\n\n// Force it into a real question\nconst cleanQ = q.toLowerCase().startsWith(\"what\")\n  ? q\n  : `What is ${q}?`;\n\nreturn [{\n  json: {\n    question: cleanQ\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        192
+      ],
+      "id": "d6b18d2c-57b0-4d39-886e-255b3ec8a47c",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "jsCode": "let historyRaw = $json.body?.history;\n\nlet historyArray = [];\n\ntry {\n  historyArray = typeof historyRaw === \"string\"\n    ? JSON.parse(historyRaw)\n    : historyRaw || [];\n} catch (e) {\n  historyArray = [];\n}\n\nconst history = historyArray\n  .map(h => `${h.role}: ${h.content}`)\n  .join('\\n');\n\nreturn [{\n  json: {\n    question: $json.body?.message || $json.question || \"\",\n    history: history\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        -256
+      ],
+      "id": "6c4c4be3-8862-4c85-8560-b9aa782856a2",
+      "name": "Code in JavaScript3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Message a model2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Message a model3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "aa7e28d6-02b4-48ba-a000-bbac5c35dd86",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ffd840af72c2eaf25c85ae43334a7062237ced42af1c3dc2fdb40f085ad4d8"
+  },
+  "id": "mCY6xU24jaQN5Vqz",
+  "tags": []
+}
