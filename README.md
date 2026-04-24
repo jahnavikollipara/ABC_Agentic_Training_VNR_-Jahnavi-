@@ -22,23 +22,8 @@ We built an Agentic AI Assistant using n8n that receives user queries through a 
 The project is built using n8n for workflow automation, Ollama with the TinyLlama model for local AI processing, LangChain for prompt handling, ngrok for exposing local webhooks, Postman or UI for testing, and JavaScript for data processing and routing logic.
 
 ## 5. Architecture Diagram
+<img width="621" height="628" alt="image" src="https://github.com/user-attachments/assets/45dc002f-8284-472d-a267-5330f5f8c81d" />
 
-User Input (UI / Postman)
-        ↓
-Webhook (n8n)
-        ↓
-Code Node (Parse question + history)
-        ↓
-Switch Node (Routing Logic)
-   ├── General Chat
-   ├── Document (PDF → Extract Text)
-   └── Search Mode
-        ↓
-Ollama (LLM Response)
-        ↓
-Edit Fields (Format JSON)
-        ↓
-Respond to Webhook
 
 <img width="1202" height="306" alt="image" src="https://github.com/user-attachments/assets/805519aa-6c77-42c6-b62a-75de8f85b117" />
 
@@ -122,7 +107,16 @@ https://developers.google.com/sheets/api
 https://developers.google.com/gmail/api
 
 ## 12. OUTPUT:
-
+Normal chat:
 <img width="728" height="565" alt="image" src="https://github.com/user-attachments/assets/a4a3b6fd-3ea9-483f-b969-3160716fa6b6" />
+
+File is Atteached:
+
+<img width="721" height="564" alt="image" src="https://github.com/user-attachments/assets/37bb6105-5aa3-4dc6-90aa-29856c1d6fd8" />
+
+Search:
+<img width="725" height="573" alt="image" src="https://github.com/user-attachments/assets/8098d870-4fe6-420e-8df8-c5c7df8279cf" />
+
+
 
 ---
