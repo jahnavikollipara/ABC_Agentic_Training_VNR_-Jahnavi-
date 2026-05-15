@@ -13,7 +13,7 @@ Users often need to extract information from documents and ask questions related
 
 A system that can accept user queries, understand conversation history, detect uploaded documents, extract and process document content, and intelligently route queries based on context. Such a system should generate accurate AI responses while supporting both general queries and document-based questions.
 
-Link_Record:https://drive.google.com/file/d/1nD8mykTrC1lsmOvNHdWFios4XZPC9apd/view?usp=sharing
+Live_Record_Link:https://drive.google.com/file/d/1nD8mykTrC1lsmOvNHdWFios4XZPC9apd/view?usp=sharing
 
 ## 3. Implemented Solution
 
